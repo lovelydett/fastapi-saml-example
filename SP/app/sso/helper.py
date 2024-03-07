@@ -3,12 +3,12 @@ from onelogin.saml2.settings import OneLogin_Saml2_Settings
 
 from fastapi import Request, HTTPException
 
-import db as sso_db
-
+from app.sso import db as sso_db
+from config import deploy_config
 from app.model import User
 
 # Load the SAML settings
-saml_settings = OneLogin_Saml2_Settings(settings_file="settings.json")
+saml_settings = OneLogin_Saml2_Settings(settings=deploy_config.get("sso_settings", None))
 
 
 async def get_current_user(request: Request) -> User:
@@ -31,7 +31,7 @@ async def authenticate_user(request: Request) -> User:
 def get_sso_login_redirect_url(request: Request) -> str:
     saml_auth = OneLogin_Saml2_Auth(request, saml_settings)
     # saml_auth.login() returns a redirect URL to the SSO login page provided by the IdP
-    return saml_auth.login()
+    return saml_auth.login(return_to=str(request.url))
 
 
 async def process_login_assertion(request: Request) -> str | None:

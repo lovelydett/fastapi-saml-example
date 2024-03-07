@@ -14,3 +14,7 @@ app = FastAPI()
 app.include_router(module_1_router, tags=["module_1"])
 app.include_router(module_2_router, tags=["module_2"])
 app.include_router(sso_router, tags=["sso"])
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
